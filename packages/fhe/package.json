@@ -1,0 +1,18 @@
+{
+  "name": "@warden/fhe",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "test":  "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.30.1",
+    "@solana/web3.js":   "^1.95.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

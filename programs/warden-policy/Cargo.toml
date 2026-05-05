@@ -1,0 +1,14 @@
+[package]
+name    = "warden-policy"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name       = "warden_policy"
+
+[dependencies]
+anchor-lang = { workspace = true }
+anchor-spl  = { workspace = true }
+
+[dev-dependencies]

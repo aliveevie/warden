@@ -1,0 +1,19 @@
+{
+  "name": "@warden/brain",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "test":  "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "@qvac/llm-llamacpp":             "*",
+    "@qvac/embed-llamacpp":           "*",
+    "@qvac/transcription-whispercpp": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,0 +1,21 @@
+[workspace]
+members = [
+    "programs/warden-policy",
+    "programs/warden-fhe-state",
+    "programs/warden-settlement",
+]
+resolver = "2"
+
+[workspace.dependencies]
+anchor-lang  = { version = "0.30.1", features = ["init-if-needed"] }
+anchor-spl   = { version = "0.30.1", features = ["token", "token_2022"] }
+solana-program = "1.18"
+
+[profile.release]
+overflow-checks = true
+lto             = "thin"
+opt-level       = 3
+
+[profile.test]
+overflow-checks = true
+opt-level       = 1

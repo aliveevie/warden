@@ -1,0 +1,68 @@
+# ─── Environment & Secrets ────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# Solana keypairs and wallet files — never commit private keys
+*.json
+!tsconfig*.json
+!package*.json
+!anchor.json
+!skills-lock.json
+keys/*.json
+*-keypair.json
+wallet.json
+id.json
+deploy-keypair.json
+
+# ─── Rust / Anchor ────────────────────────────────────────────────────────────
+target/
+.anchor/
+test-ledger/
+**/*.rs.bk
+
+# ─── Node / TypeScript ────────────────────────────────────────────────────────
+node_modules/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+.next/
+out/
+
+# ─── QVAC model files (large binaries — store outside repo) ───────────────────
+*.gguf
+*.ggml
+*.onnx
+*.bin
+*.pt
+*.safetensors
+models/
+brain/models/
+packages/brain/models/
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ─── OS artifacts ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+touch
+
+# ─── Local tooling (installed separately, not project source) ─────────────────
+.agents/
+.claude/
+
+# ─── Editor ───────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# ─── Test artifacts ───────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
