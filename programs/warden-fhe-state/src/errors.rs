@@ -8,6 +8,9 @@ pub enum WardenFheError {
     #[msg("Proposal is not in Pending status")]
     ProposalNotPending,
 
+    #[msg("Proposal is not in GraphExecuted status")]
+    ProposalNotGraphExecuted,
+
     #[msg("Proposal is not in VerifiedCompliant status")]
     ProposalNotCompliant,
 
@@ -22,4 +25,13 @@ pub enum WardenFheError {
 
     #[msg("Caller is not the agent authority")]
     Unauthorized,
+
+    #[msg("Compliance inputs missing from proposal — submit with inputs first")]
+    MissingComplianceInputs,
+
+    #[msg("Output ciphertext account does not match proposal record")]
+    OutputCiphertextMismatch,
+
+    #[msg("Encrypted state ciphertext exceeds maximum allowed size")]
+    StateCiphertextTooLarge,
 }

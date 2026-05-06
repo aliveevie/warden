@@ -8,7 +8,14 @@ crate-type = ["cdylib", "lib"]
 name       = "warden_policy"
 
 [dependencies]
-anchor-lang = { workspace = true }
-anchor-spl  = { workspace = true }
+# Ika requires anchor-lang 1.x
+anchor-lang        = { version = "1", features = ["init-if-needed"] }
+anchor-spl         = { version = "0.32", features = ["token", "token_2022"] }
+# Ika dWallet on-chain CPI crate
+ika-dwallet-anchor = "0.1"
+# PDA helpers and account type definitions
+ika-solana-sdk-types = "0.1"
 
 [dev-dependencies]
+anchor-client = "1"
+solana-sdk    = "2"

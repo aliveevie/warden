@@ -1,4 +1,6 @@
 use anchor_lang::prelude::*;
+use ika_dwallet_anchor::cpi::accounts::TransferAuthority;
+use ika_dwallet_anchor::program::IkaDwallet;
 use crate::state::{AgentAccount, GuardrailSet, PolicyAccount};
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug)]
@@ -32,6 +34,7 @@ pub struct InitializePolicy<'info> {
     pub authority: Signer<'info>,
 
     pub system_program: Program<'info, System>,
+    pub ika_program:    Program<'info, IkaDwallet>,
 }
 
 pub fn handler(ctx: Context<InitializePolicy>, args: InitializePolicyArgs) -> Result<()> {
