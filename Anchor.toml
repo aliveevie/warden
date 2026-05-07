@@ -7,13 +7,13 @@ skip-lint = false
 
 [programs.devnet]
 warden_policy     = "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMi"
-warden_fhe_state  = "WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj"
-warden_settlement = "WRDNset3icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMk"
+warden_fhe_state  = "WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj"
+warden_settlement = "GvseZLytX3AH4Ly5Zvr3kpsEPLhTnVSquQrEZUroeL9R"
 
 [programs.localnet]
 warden_policy     = "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMi"
-warden_fhe_state  = "WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj"
-warden_settlement = "WRDNset3icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMk"
+warden_fhe_state  = "WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj"
+warden_settlement = "GvseZLytX3AH4Ly5Zvr3kpsEPLhTnVSquQrEZUroeL9R"
 
 [registry]
 url = "https://api.apr.dev"

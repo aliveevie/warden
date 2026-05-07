@@ -8,7 +8,13 @@ crate-type = ["cdylib", "lib"]
 name       = "warden_fhe_state"
 
 [dependencies]
-anchor-lang = { workspace = true }
-anchor-spl  = { workspace = true }
+# Encrypt sponsor SDK targets anchor-lang 0.32 in production; for compile-only
+# verification we pin to workspace 0.30.1 against the local Encrypt stubs.
+anchor-lang    = { workspace = true }
+anchor-spl     = { workspace = true }
+encrypt-anchor = "0.1"
+encrypt-types  = "0.1"
+encrypt-dsl    = "0.1"
 
 [dev-dependencies]
+encrypt-solana-test = "0.1"

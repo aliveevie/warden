@@ -1,0 +1,138 @@
+# Quick Start
+
+> **Pre-Alpha Disclaimer:** This is a pre-alpha release for development and testing only. Signing uses a single mock signer, not real distributed MPC. All 11 protocol operations are implemented (DKG, Sign, Presign, FutureSign, ReEncryptShare, etc.) across all 4 curves and 7 signature schemes, but without real MPC security guarantees. The dWallet keys, trust model, and signing protocol are not final; do not rely on any key material until mainnet. All interfaces, APIs, and data formats are subject to change without notice. The Solana program and all on-chain data will be wiped periodically and everything will be deleted when we transition to Ika Alpha 1. This software is provided "as is" without warranty of any kind; use is entirely at your own risk and dWallet Labs assumes no liability for any damages arising from its use.
+
+Build your first dWallet-controlled program in 5 minutes.
+
+## 1. Create a Solana Program
+
+Pick your framework. All four produce interoperable programs:
+
+**Pinocchio** (maximum CU efficiency, `no_std`):
+```toml
+[dependencies]
+ika-dwallet-pinocchio = { git = "https://github.com/dwallet-labs/ika-pre-alpha" }
+pinocchio = "0.10"
+pinocchio-system = "0.5"
+```
+
+**Quasar** (zero-copy + declarative validation, `no_std`):
+```toml
+[dependencies]
+ika-dwallet-quasar = { git = "https://github.com/dwallet-labs/ika-pre-alpha" }
+quasar-lang = { git = "https://github.com/blueshift-gg/quasar", branch = "master" }
+solana-address = { version = "2.4", features = ["curve25519"] }
+```
+
+**Anchor v1** (easiest, declarative):
+```toml
+[dependencies]
+ika-dwallet-anchor = { git = "https://github.com/dwallet-labs/ika-pre-alpha" }
+anchor-lang = "1"
+```
+
+**Native** (standard `solana-program`, no framework):
+```toml
+[dependencies]
+ika-dwallet-native = { git = "https://github.com/dwallet-labs/ika-pre-alpha" }
+solana-program = "2.2"
+```
+
+All require:
+```toml
+[lib]
+crate-type = ["cdylib", "lib"]
+```
+
+## 2. Set Up the CPI Context
+
+```rust
+#![no_std]
+extern crate alloc;
+
+use pinocchio::{entrypoint, AccountView, Address, ProgramResult};
+use ika_dwallet_pinocchio::DWalletContext;
+
+entrypoint!(process_instruction);
+pinocchio::nostd_panic_handler!();
+
+pub const ID: Address = Address::new_from_array([5u8; 32]);
+```
+
+The `DWalletContext` provides CPI methods for interacting with the dWallet program:
+
+```rust
+let ctx = DWalletContext {
+    dwallet_program,
+    cpi_authority,
+    caller_program,
+    cpi_authority_bump,
+};
+```
+
+## 3. Approve a Message
+
+When your program's conditions are met, call `approve_message` via CPI:
+
+```rust
+ctx.approve_message(
+    message_approval,   // writable PDA to create
+    dwallet,            // the dWallet account
+    payer,              // rent payer
+    system_program,     // system program
+    message_hash,       // 32-byte hash of the message to sign
+    user_pubkey,        // 32-byte user public key
+    signature_scheme,   // 0=Ed25519, 1=Secp256k1, 2=Secp256r1
+    bump,               // MessageApproval PDA bump
+)?;
+```
+
+This creates a `MessageApproval` PDA on-chain. The Ika network detects it and produces a signature.
+
+## 4. Transfer dWallet Authority
+
+Before your program can approve messages, the dWallet's authority must point to your program's CPI authority PDA:
+
+```rust
+// Derive the CPI authority PDA
+// Seeds: [b"__ika_cpi_authority"], program_id = YOUR_PROGRAM_ID
+let (cpi_authority, _bump) = Address::find_program_address(
+    &[b"__ika_cpi_authority"],
+    &your_program_id,
+);
+
+// Transfer ownership (called by current authority, typically the dWallet creator)
+ctx.transfer_dwallet(dwallet, cpi_authority.as_array())?;
+```
+
+## 5. Read the Signature
+
+After the network signs, the `MessageApproval` account contains the signature:
+
+| Offset | Field | Size |
+|--------|-------|------|
+| 139 | status | 1 |
+| 140 | signature_len | 2 |
+| 142 | signature | up to 128 |
+
+Status values:
+- `0` = Pending (awaiting signature)
+- `1` = Signed (signature available)
+
+## What Happens Under the Hood
+
+1. Your program calls `approve_message` via CPI -> creates a `MessageApproval` PDA (status = Pending)
+2. The Ika network detects the `MessageApproval` account
+3. The NOA (Network Operated Authority) signs the message using 2PC-MPC
+4. The NOA calls `CommitSignature` to write the signature on-chain (status = Signed)
+5. Anyone can read the signature from the `MessageApproval` account
+
+In pre-alpha mode, step 3 uses a mock signer. All 11 protocol operations are supported (DKG, Sign, Presign, PresignForDWallet, ImportedKeyVerification, ReEncryptShare, MakeSharePublic, FutureSign, SignWithPartialUserSig, and more) across all 4 curves and 7 signature schemes.
+
+## Pre-Alpha Environment
+
+| Resource | Endpoint |
+|----------|----------|
+| **dWallet gRPC** | `https://pre-alpha-dev-1.ika.ika-network.net:443` |
+| **Solana Network** | Devnet (`https://api.devnet.solana.com`) |
+| **Program ID** | `87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY` |

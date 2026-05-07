@@ -1,0 +1,162 @@
+# CPI Framework
+
+> **Pre-Alpha Disclaimer:** This is a pre-alpha release for development and testing only. Signing uses a single mock signer, not real distributed MPC. All 11 protocol operations are implemented (DKG, Sign, Presign, FutureSign, ReEncryptShare, etc.) across all 4 curves and 7 signature schemes, but without real MPC security guarantees. The dWallet keys, trust model, and signing protocol are not final; do not rely on any key material until mainnet. All interfaces, APIs, and data formats are subject to change without notice. The Solana program and all on-chain data will be wiped periodically and everything will be deleted when we transition to Ika Alpha 1. This software is provided "as is" without warranty of any kind; use is entirely at your own risk and dWallet Labs assumes no liability for any damages arising from its use.
+
+## DWalletContext
+
+The CPI SDK is available for four Solana frameworks:
+
+| Crate | Framework | Account type |
+|-------|-----------|-------------|
+| `ika-dwallet-pinocchio` | Pinocchio | `&AccountView` |
+| `ika-dwallet-native` | solana-program | `&AccountInfo<'info>` |
+| `ika-dwallet-anchor` | Anchor v1 | `AccountInfo<'info>` |
+| `ika-dwallet-quasar` | Quasar | `&AccountView` (via `.to_account_view()`) |
+
+All four provide an identical `DWalletContext` with the same methods and wire format.
+
+```rust
+use ika_dwallet_pinocchio::DWalletContext; // or _anchor, _native, _quasar
+
+let ctx = DWalletContext {
+    dwallet_program: &dwallet_program_account,
+    cpi_authority: &cpi_authority_account,
+    caller_program: &my_program_account,
+    cpi_authority_bump: bump,
+};
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `dwallet_program` | `&AccountView` | The dWallet program account |
+| `cpi_authority` | `&AccountView` | Your program's CPI authority PDA |
+| `caller_program` | `&AccountView` | Your program's account (must be executable) |
+| `cpi_authority_bump` | `u8` | Bump seed for the CPI authority PDA |
+
+## CPI Authority PDA
+
+Every program derives its CPI authority from a single seed:
+
+```rust
+pub const CPI_AUTHORITY_SEED: &[u8] = b"__ika_cpi_authority";
+
+// Derivation:
+let (cpi_authority, bump) = Address::find_program_address(
+    &[CPI_AUTHORITY_SEED],
+    &your_program_id,
+);
+```
+
+The dWallet program verifies this derivation during CPI calls.
+
+## Available Methods
+
+### approve_message
+
+Creates a `MessageApproval` PDA requesting a signature. The first account is the `DWalletCoordinator` PDA (used to read the current epoch).
+
+```rust
+ctx.approve_message(
+    coordinator,        // readonly -- DWalletCoordinator PDA (for epoch)
+    message_approval,   // writable, empty -- PDA to create
+    dwallet,            // readonly -- the dWallet account
+    payer,              // writable, signer -- rent payer
+    system_program,     // readonly -- system program
+    message_digest,     // [u8; 32] -- keccak256 hash of message
+    message_metadata_digest, // [u8; 32] -- keccak256 hash of metadata (zero if none)
+    user_pubkey,        // [u8; 32] -- user public key
+    signature_scheme,   // u16 -- DWalletSignatureScheme value (0-6)
+    bump,               // u8 -- MessageApproval PDA bump
+)?;
+```
+
+**CPI instruction data:** `[8, bump, message_digest(32), message_metadata_digest(32), user_pubkey(32), signature_scheme(2)]` = 100 bytes.
+
+**CPI accounts:**
+
+| # | Account | W | S |
+|---|---------|---|---|
+| 0 | coordinator | no | no |
+| 1 | message_approval | yes | no |
+| 2 | dwallet | no | no |
+| 3 | caller_program | no | no |
+| 4 | cpi_authority | no | yes |
+| 5 | payer | yes | yes |
+| 6 | system_program | no | no |
+
+### transfer_dwallet
+
+Transfers dWallet authority to a new pubkey.
+
+```rust
+ctx.transfer_dwallet(
+    dwallet,         // writable -- the dWallet account
+    new_authority,   // [u8; 32] -- new authority pubkey
+)?;
+```
+
+**CPI instruction data:** `[24, new_authority(32)]` = 33 bytes.
+
+**CPI accounts:**
+
+| # | Account | W | S |
+|---|---------|---|---|
+| 0 | caller_program | no | no |
+| 1 | cpi_authority | no | yes |
+| 2 | dwallet | yes | no |
+
+### transfer_future_sign
+
+Transfers the completion authority of a `PartialUserSignature`.
+
+```rust
+ctx.transfer_future_sign(
+    partial_user_sig,          // writable -- partial signature account
+    new_completion_authority,  // [u8; 32] -- new authority pubkey
+)?;
+```
+
+**CPI instruction data:** `[42, new_completion_authority(32)]` = 33 bytes.
+
+**CPI accounts:**
+
+| # | Account | W | S |
+|---|---------|---|---|
+| 0 | partial_user_sig | yes | no |
+| 1 | caller_program | no | no |
+| 2 | cpi_authority | no | yes |
+
+## Signing Mechanism
+
+All CPI methods use `invoke_signed` with the CPI authority seeds:
+
+```rust
+let bump_byte = [self.cpi_authority_bump];
+let signer_seeds: [Seed; 2] = [
+    Seed::from(CPI_AUTHORITY_SEED),
+    Seed::from(&bump_byte),
+];
+let signer = Signer::from(&signer_seeds);
+
+invoke_signed(&instruction, &accounts, &[signer])
+```
+
+The dWallet program verifies:
+1. `caller_program` is executable
+2. `cpi_authority` matches `PDA(["__ika_cpi_authority"], caller_program)`
+3. `dwallet.authority == cpi_authority` (for `approve_message` and `transfer_dwallet`)
+
+## Instruction Discriminators
+
+| Instruction | Discriminator |
+|-------------|---------------|
+| `approve_message` | 8 |
+| `transfer_ownership` | 24 |
+| `commit_network_dkg` | 28 |
+| `commit_network_key_reconfiguration` | 30 |
+| `commit_dwallet` | 31 |
+| `commit_future_sign` | 33 |
+| `commit_encrypted_user_secret_key_share` | 34 |
+| `commit_public_user_secret_key_share` | 35 |
+| `transfer_future_sign` | 42 |
+| `commit_signature` | 43 |

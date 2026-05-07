@@ -6,7 +6,7 @@ pub mod state;
 
 use instructions::*;
 
-declare_id!("WRDNset3icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMk");
+declare_id!("GvseZLytX3AH4Ly5Zvr3kpsEPLhTnVSquQrEZUroeL9R");
 
 #[program]
 pub mod warden_settlement {

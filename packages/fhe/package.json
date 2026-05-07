@@ -9,8 +9,10 @@
     "test":  "jest --passWithNoTests"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.30.1",
-    "@solana/web3.js":   "^1.95.0"
+    "@coral-xyz/anchor":                     "^0.30.1",
+    "@encrypt.xyz/pre-alpha-solana-client":  "^0.1.0",
+    "@solana/web3.js":                       "^1.95.0",
+    "bs58":                                  "^5.0.0"
   },
   "devDependencies": {
     "typescript": "^5.4.0"
