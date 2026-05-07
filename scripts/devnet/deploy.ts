@@ -16,7 +16,6 @@
  */
 
 import {
-  BPF_LOADER_UPGRADEABLE_PROGRAM_ID,
   Connection,
   Keypair,
   PublicKey,
@@ -25,6 +24,10 @@ import {
   TransactionInstruction,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
+
+const BPF_LOADER_UPGRADEABLE_PROGRAM_ID = new PublicKey(
+  "BPFLoaderUpgradeab1e11111111111111111111111",
+);
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -70,7 +73,7 @@ async function main() {
 
   console.log("\n\x1b[1m═══ Warden devnet deploy ═══\x1b[0m\n");
   val("RPC", RPC_URL);
-  val("Payer",   payer.pubkey.toBase58());
+  val("Payer",   payer.publicKey.toBase58());
   val("Program", prog.publicKey.toBase58());
   val("Buffer",  buffer.publicKey.toBase58());
   val("Bytes",   `${so.length}  (${(so.length / 1024).toFixed(1)} KB)`);

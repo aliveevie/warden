@@ -41,10 +41,54 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import * as crypto from "node:crypto";
-import {
-  createEncryptClient,
-  DEVNET_PRE_ALPHA_GRPC_URL,
-} from "../../external-sdks/encrypt/chains/solana/clients/typescript/src/grpc.ts";
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
+import * as path from "node:path";
+
+const DEVNET_PRE_ALPHA_GRPC_URL = "pre-alpha-dev-1.encrypt.ika-network.net:443";
+
+// Minimal inline gRPC client for the Encrypt executor — avoids depending on
+// the encrypt-pre-alpha TS client's generated code.
+function createEncryptClient(grpcUrl: string = DEVNET_PRE_ALPHA_GRPC_URL) {
+  const protoPath = path.resolve(
+    __dirname,
+    "../../external-sdks/encrypt/proto/encrypt_service.proto",
+  );
+  const pkgDef = protoLoader.loadSync(protoPath, {
+    keepCase: false, longs: String, enums: String, defaults: true, oneofs: true,
+  });
+  const pkg: any = (grpc.loadPackageDefinition(pkgDef).encrypt as any).v1;
+  const isLocal = grpcUrl.startsWith("localhost") || grpcUrl.startsWith("127.0.0.1");
+  const creds = isLocal ? grpc.credentials.createInsecure() : grpc.credentials.createSsl();
+  const client = new pkg.EncryptService(grpcUrl, creds);
+
+  return {
+    createInput(params: {
+      chain: number;
+      inputs: { ciphertextBytes: Uint8Array; fheType: number }[];
+      proof?: Uint8Array;
+      authorized: Uint8Array;
+      networkEncryptionPublicKey: Uint8Array;
+    }): Promise<{ ciphertextIdentifiers: Buffer[] }> {
+      return new Promise((resolve, reject) => {
+        client.CreateInput({
+          chain: params.chain,
+          inputs: params.inputs.map((i) => ({
+            ciphertextBytes: Buffer.from(i.ciphertextBytes),
+            fheType: i.fheType,
+          })),
+          proof: Buffer.from(params.proof ?? new Uint8Array()),
+          authorized: Buffer.from(params.authorized),
+          networkEncryptionPublicKey: Buffer.from(params.networkEncryptionPublicKey),
+        }, (err: any, resp: any) => {
+          if (err) reject(err);
+          else resolve({ ciphertextIdentifiers: resp.ciphertextIdentifiers });
+        });
+      });
+    },
+    close() { client.close(); },
+  };
+}
 
 // ─── Config ─────────────────────────────────────────────────────────────────
 
