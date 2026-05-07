@@ -296,7 +296,7 @@ async function main() {
     { name: "max_open_pos",    value: 5n   },
   ];
   const { ciphertextIdentifiers } = await encrypt.createInput({
-    chain: 1, // Solana
+    chain: 0, // proto enum: SOLANA = 0
     inputs: inputs.map((i) => ({
       ciphertextBytes: mockCiphertext(i.value, FHE_UINT64),
       fheType: FHE_UINT64,
