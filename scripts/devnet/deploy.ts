@@ -139,7 +139,9 @@ async function main() {
   // Programdata account is a PDA from BPFLoaderUpgradeable
   const [programdata] = PublicKey.findProgramAddressSync(
     [prog.publicKey.toBuffer()], BPF_LOADER_UPGRADEABLE_PROGRAM_ID);
-  const programdataSpace = BUFFER_HEADER + so.length * 2; // headroom for upgrades
+  // No upgrade headroom: use exact program size (saves ~1 SOL of rent).
+  const maxDataLen = so.length;
+  const programdataSpace = BUFFER_HEADER + maxDataLen;
   const programdataLamports = await conn.getMinimumBalanceForRentExemption(programdataSpace);
 
   const createProgram = SystemProgram.createAccount({
@@ -153,7 +155,7 @@ async function main() {
     programId: BPF_LOADER_UPGRADEABLE_PROGRAM_ID,
     data: Buffer.concat([
       Buffer.from([2, 0, 0, 0]),
-      Buffer.from(new BigUint64Array([BigInt(so.length * 2)]).buffer), // max_data_len u64
+      Buffer.from(new BigUint64Array([BigInt(maxDataLen)]).buffer), // max_data_len u64
     ]),
     keys: [
       { pubkey: payer.publicKey,                 isSigner: true,  isWritable: true  },
