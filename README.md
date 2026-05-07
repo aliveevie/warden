@@ -126,10 +126,19 @@ CPI authority PDAs:
 
 - ✅ `warden_core.so` builds against real `encrypt-anchor` and
   `ika-dwallet-anchor` (anchor-lang 1.x, edition 2024) — 248 KB BPF binary
-- ✅ 3/3 LiteSVM smoke tests pass: `create_agent`, `bind_dwallet`,
-  `bind_dwallet from wrong authority is rejected`
-- ✅ Errors: `DwalletAlreadyBound`, `WrongDwallet`, `ProposalNotPending`,
-  `DecryptionVerificationFailed` all wired up
+- ✅ **7/7 tests pass against real sponsor binaries in LiteSVM:**
+  - 3 smoke tests on `warden_core.so` alone (create_agent, bind_dwallet,
+    bind from wrong authority rejected)
+  - **3 CPI integration tests** that load the **real `encrypt_program.so`
+    AND `ika_dwallet_program.so`** from `external-sdks/*/bin/` alongside our
+    program: confirms (a) both sponsor binaries deploy successfully,
+    (b) `Encrypt::initialize` runs against the real binary, (c) our
+    `submit_proposal` CPI reaches the Encrypt program (rejected at
+    ciphertext validation, as expected without a real ciphertext registry —
+    but the CPI account ordering + discriminator are accepted).
+  - 1 `declare_id!` round-trip test
+- ✅ Errors wired and tested: `DwalletAlreadyBound`, `WrongDwallet`,
+  `ProposalNotPending`, `DecryptionVerificationFailed`
 
 ## Status against judging criteria
 

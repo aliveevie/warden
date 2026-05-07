@@ -16,6 +16,10 @@ export const ENCRYPT_PROGRAM_ID = new PublicKey(
   "Cq37zHSH1zB6xomYK2LjP6uXJvLR3uTehxA5W9wgHGvx",
 );
 
+export const IKA_PROGRAM_ID = new PublicKey(
+  "DWaL1c2nc3J3Eiduwq6EJovDfBPPH2gERKy1TqSkbRWq",
+);
+
 export const DEVNET_RPC = "https://api.devnet.solana.com";
 
 // ── Account layouts (must match programs/warden-core/src/lib.rs) ────────────

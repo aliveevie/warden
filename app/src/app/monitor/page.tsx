@@ -14,6 +14,7 @@ import {
   DEVNET_RPC,
   WARDEN_PROGRAM_ID,
   ENCRYPT_PROGRAM_ID,
+  IKA_PROGRAM_ID,
   fetchAllProposals,
   type Proposal,
   type ProposalStatus,
@@ -69,6 +70,7 @@ export default function MonitorPage() {
         <table style={s.table}><tbody>
           <Row label="warden-core"   value={WARDEN_PROGRAM_ID.toBase58()}  mono />
           <Row label="Encrypt"       value={ENCRYPT_PROGRAM_ID.toBase58()} mono />
+          <Row label="Ika dWallet"   value={IKA_PROGRAM_ID.toBase58()}     mono />
           <Row label="RPC"           value={DEVNET_RPC} mono />
         </tbody></table>
       </div>

@@ -104,9 +104,10 @@ if (!WARDEN_PROGRAM_ID) {
   process.exit(1);
 }
 const WARDEN_PROGRAM = new PublicKey(WARDEN_PROGRAM_ID);
-const IKA_PROGRAM = process.env.IKA_PROGRAM_ID
-  ? new PublicKey(process.env.IKA_PROGRAM_ID)
-  : null;
+// Real Ika dWallet program ID on Solana devnet (pre-alpha).
+const IKA_PROGRAM = new PublicKey(
+  process.env.IKA_PROGRAM_ID ?? "DWaL1c2nc3J3Eiduwq6EJovDfBPPH2gERKy1TqSkbRWq",
+);
 
 const connection = new Connection(RPC_URL, "confirmed");
 const payer = Keypair.generate();
@@ -169,7 +170,7 @@ async function main() {
   console.log("\n\x1b[1m═══ Warden Frontier Demo — Encrypt + Ika on Solana ═══\x1b[0m\n");
   val("Warden program",  WARDEN_PROGRAM.toBase58());
   val("Encrypt program", ENCRYPT_PROGRAM.toBase58());
-  val("Ika program",     IKA_PROGRAM?.toBase58() ?? "(skipped — no IKA_PROGRAM_ID)");
+  val("Ika program",     IKA_PROGRAM.toBase58());
   console.log();
 
   // ── Setup ──────────────────────────────────────────────────────────────
@@ -383,13 +384,6 @@ async function main() {
   ok("Plaintext published");
 
   // ── 7. reveal_and_authorize ────────────────────────────────────────────
-  if (IKA_PROGRAM === null) {
-    log("7/7", "Skipping Ika cosignature (set IKA_PROGRAM_ID + IKA_DWALLET to enable)");
-    console.log("\n\x1b[1m═══ Encrypt half of demo passed ✓ ═══\x1b[0m\n");
-    encrypt.close();
-    return;
-  }
-
   log("7/7", "Revealing result + asking Ika to cosign action commitment...");
   const [ikaCpiAuth, ikaCpiBump] = pda(
     [Buffer.from("__ika_cpi_authority")], WARDEN_PROGRAM,
