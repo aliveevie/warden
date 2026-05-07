@@ -15,7 +15,10 @@
     "anchor:build": "anchor build",
     "anchor:test": "anchor test",
     "anchor:deploy": "anchor deploy --provider.cluster devnet",
-    "dev": "npm run dev --workspace=app"
+    "dev": "npm run dev --workspace=app",
+    "devnet:keygen": "tsx scripts/devnet/keygen.ts",
+    "devnet:deploy": "tsx scripts/devnet/deploy.ts",
+    "devnet:e2e": "tsx scripts/devnet/e2e-demo.ts"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
