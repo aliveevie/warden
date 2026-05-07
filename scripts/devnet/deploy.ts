@@ -118,9 +118,9 @@ async function main() {
     const ix    = new TransactionInstruction({
       programId: BPF_LOADER_UPGRADEABLE_PROGRAM_ID,
       data: Buffer.concat([
-        Buffer.from([1, 0, 0, 0]),            // Write tag
-        Buffer.from(new Uint32Array([offset]).buffer), // u32 LE offset
-        Buffer.from(new Uint32Array([slice.length]).buffer), // u32 LE len
+        Buffer.from([1, 0, 0, 0]),                                   // Write tag
+        Buffer.from(new Uint32Array([offset]).buffer),               // u32 LE offset
+        Buffer.from(new BigUint64Array([BigInt(slice.length)]).buffer), // bincode Vec<u8> uses u64 length
         slice,
       ]),
       keys: [
