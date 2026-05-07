@@ -340,45 +340,41 @@ async function main() {
 
   // ── 4. submit_proposal ─────────────────────────────────────────────────
   log("4/7", "Submitting proposal — Warden CPIs Encrypt::execute_graph...");
-  await send(
-    [new TransactionInstruction({
-      programId: WARDEN_PROGRAM,
-      data: Buffer.concat([
-        anchorDisc("submit_proposal"),
-        proposalId, resultCommitment, Buffer.from([encryptCpiBump]),
-      ]),
-      keys: [
-        { pubkey: agentPda,                isSigner: false, isWritable: true  },
-        { pubkey: proposalPda,             isSigner: false, isWritable: true  },
-        { pubkey: payer.publicKey,         isSigner: true,  isWritable: false },
+  await send([new TransactionInstruction({
+    programId: WARDEN_PROGRAM,
+    data: Buffer.concat([
+      anchorDisc("submit_proposal"),
+      proposalId, resultCommitment, Buffer.from([encryptCpiBump]),
+    ]),
+    keys: [
+      { pubkey: agentPda,                isSigner: false, isWritable: true  },
+      { pubkey: proposalPda,             isSigner: false, isWritable: true  },
+      { pubkey: payer.publicKey,         isSigner: true,  isWritable: false },
 
-        // 6 encrypted inputs, all writable so Encrypt can update their
-        // refcounts during execute_graph.
-        ...inputCts.map((ct) => ({ pubkey: ct, isSigner: false, isWritable: true })),
-        // output_ct
-        { pubkey: outputCt.publicKey,      isSigner: true,  isWritable: true  },
+      // 6 encrypted inputs, all writable so Encrypt can update their
+      // refcounts during execute_graph.
+      ...inputCts.map((ct) => ({ pubkey: ct, isSigner: false, isWritable: true })),
+      // Pre-existing EBool output_ct — encrypt updates the digest in place.
+      { pubkey: outputCtPubkey,          isSigner: false, isWritable: true  },
 
-        // Encrypt plumbing
-        { pubkey: ENCRYPT_PROGRAM,         isSigner: false, isWritable: false },
-        { pubkey: configPda,               isSigner: false, isWritable: true  },
-        { pubkey: depositPda,              isSigner: false, isWritable: true  },
-        { pubkey: encryptCpiAuth,          isSigner: false, isWritable: false },
-        { pubkey: WARDEN_PROGRAM,          isSigner: false, isWritable: false },
-        { pubkey: networkKeyPda,           isSigner: false, isWritable: false },
-        { pubkey: eventAuthority,          isSigner: false, isWritable: false },
-        { pubkey: payer.publicKey,         isSigner: true,  isWritable: true  },
-        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      ],
-    })],
-    [outputCt],
-  );
+      // Encrypt plumbing
+      { pubkey: ENCRYPT_PROGRAM,         isSigner: false, isWritable: false },
+      { pubkey: configPda,               isSigner: false, isWritable: true  },
+      { pubkey: depositPda,              isSigner: false, isWritable: true  },
+      { pubkey: encryptCpiAuth,          isSigner: false, isWritable: false },
+      { pubkey: WARDEN_PROGRAM,          isSigner: false, isWritable: false },
+      { pubkey: networkKeyPda,           isSigner: false, isWritable: false },
+      { pubkey: eventAuthority,          isSigner: false, isWritable: false },
+      { pubkey: payer.publicKey,         isSigner: true,  isWritable: true  },
+      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+    ],
+  })]);
   ok(`Proposal: ${proposalPda.toBase58()}`);
-  ok(`Output CT: ${outputCt.publicKey.toBase58()}`);
 
   // ── Wait for Encrypt executor to commit graph result ──────────────────
   log("4/7", "Waiting for Encrypt network to commit homomorphic result...");
   await pollUntil(
-    outputCt.publicKey,
+    outputCtPubkey,
     (d) => d.length >= 100 && d[99] === 1, // status = VERIFIED
     120_000,
   );
