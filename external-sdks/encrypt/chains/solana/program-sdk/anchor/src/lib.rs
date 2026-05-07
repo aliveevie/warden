@@ -342,7 +342,10 @@ impl<'info> EncryptContext<'info> {
         let accounts = vec![
             AccountMeta::new_readonly(self.config.key(), false),
             AccountMeta::new(self.deposit.key(), false),
-            AccountMeta::new(request_acct.key(), false),
+            // request_acct is created via system::create_account inside the
+            // encrypt program; that requires the new account to be a signer
+            // at encrypt's level. Forward the outer-tx signature.
+            AccountMeta::new(request_acct.key(), true),
             AccountMeta::new_readonly(self.caller_program.key(), false),
             AccountMeta::new_readonly(self.cpi_authority.key(), true),
             AccountMeta::new_readonly(ciphertext.key(), false),
