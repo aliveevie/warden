@@ -176,8 +176,9 @@ function mockCiphertext(value: bigint, fheType: number): Uint8Array {
   return buf;
 }
 
-const FHE_UINT64 = 5;
+// FHE type IDs (see external-sdks/encrypt/crates/encrypt-types/src/encrypted.rs).
 const FHE_BOOL   = 0;
+const FHE_UINT64 = 4;
 
 // ─── Main ───────────────────────────────────────────────────────────────────
 
