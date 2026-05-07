@@ -392,7 +392,7 @@ async function main() {
       ]),
       keys: [
         { pubkey: proposalPda,             isSigner: false, isWritable: true  },
-        { pubkey: outputCt.publicKey,      isSigner: false, isWritable: false },
+        { pubkey: outputCtPubkey,          isSigner: false, isWritable: false },
         { pubkey: decryptionReq.publicKey, isSigner: true,  isWritable: true  },
         { pubkey: ENCRYPT_PROGRAM,         isSigner: false, isWritable: false },
         { pubkey: configPda,               isSigner: false, isWritable: false },
