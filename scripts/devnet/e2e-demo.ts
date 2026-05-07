@@ -108,9 +108,10 @@ if (!WARDEN_PROGRAM_ID) {
   process.exit(1);
 }
 const WARDEN_PROGRAM = new PublicKey(WARDEN_PROGRAM_ID);
-// Real Ika dWallet program ID on Solana devnet (pre-alpha).
+// Real Ika dWallet program ID currently deployed on Solana devnet
+// (per external-sdks/ika/README.md "Devnet" table).
 const IKA_PROGRAM = new PublicKey(
-  process.env.IKA_PROGRAM_ID ?? "DWaL1c2nc3J3Eiduwq6EJovDfBPPH2gERKy1TqSkbRWq",
+  process.env.IKA_PROGRAM_ID ?? "87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY",
 );
 
 const connection = new Connection(RPC_URL, "confirmed");
