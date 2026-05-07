@@ -97,8 +97,10 @@ function createEncryptClient(grpcUrl: string = DEVNET_PRE_ALPHA_GRPC_URL) {
 const RPC_URL  = process.env.RPC_URL  ?? "https://api.devnet.solana.com";
 const GRPC_URL = process.env.GRPC_URL ?? DEVNET_PRE_ALPHA_GRPC_URL;
 
+// Real Encrypt program ID currently deployed on Solana devnet
+// (per external-sdks/encrypt/README.md "Pre-Alpha Environment").
 const ENCRYPT_PROGRAM = new PublicKey(
-  process.env.ENCRYPT_PROGRAM_ID ?? "Cq37zHSH1zB6xomYK2LjP6uXJvLR3uTehxA5W9wgHGvx",
+  process.env.ENCRYPT_PROGRAM_ID ?? "4ebfzWdKnrnGseuQpezXdG8yCdHqwQ1SSBHD3bWArND8",
 );
 const WARDEN_PROGRAM_ID = process.env.WARDEN_PROGRAM_ID;
 if (!WARDEN_PROGRAM_ID) {
