@@ -115,7 +115,17 @@ const IKA_PROGRAM = new PublicKey(
 );
 
 const connection = new Connection(RPC_URL, "confirmed");
-const payer = Keypair.generate();
+
+// Reuse a funded keypair when provided (devnet airdrop is rate-limited / captcha-gated).
+// Falls back to a fresh generated keypair (which will need an airdrop in main()).
+const PAYER_KEYPAIR_PATH =
+  process.env.PAYER_KEYPAIR ?? path.join(os.homedir(), ".config/solana/id.json");
+const payer: Keypair = fs.existsSync(PAYER_KEYPAIR_PATH)
+  ? Keypair.fromSecretKey(
+      Uint8Array.from(JSON.parse(fs.readFileSync(PAYER_KEYPAIR_PATH, "utf-8")) as number[]),
+    )
+  : Keypair.generate();
+const payerWasLoaded = fs.existsSync(PAYER_KEYPAIR_PATH);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -182,9 +192,15 @@ async function main() {
   const encrypt = createEncryptClient(GRPC_URL);
   log("Setup", `Connected to Encrypt executor at ${GRPC_URL}`);
 
-  log("Setup", "Funding payer via airdrop...");
-  const sig = await connection.requestAirdrop(payer.publicKey, 100e9);
-  await connection.confirmTransaction(sig);
+  if (payerWasLoaded) {
+    const bal = await connection.getBalance(payer.publicKey);
+    log("Setup", `Reusing funded payer (${(bal / 1e9).toFixed(4)} SOL)`);
+    if (bal < 1e8) throw new Error(`Payer ${payer.publicKey.toBase58()} below 0.1 SOL — fund it first`);
+  } else {
+    log("Setup", "Funding payer via airdrop...");
+    const sig = await connection.requestAirdrop(payer.publicKey, 2e9);
+    await connection.confirmTransaction(sig);
+  }
   ok(`Payer: ${payer.publicKey.toBase58()}`);
 
   const [configPda]      = pda([Buffer.from("encrypt_config")],   ENCRYPT_PROGRAM);
