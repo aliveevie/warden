@@ -8,24 +8,27 @@
     "app"
   ],
   "scripts": {
-    "build":         "npm run build --workspaces --if-present",
-    "test":          "npm run test --workspaces --if-present",
-    "lint":          "eslint '**/*.{ts,tsx}' --ignore-path .gitignore",
-    "typecheck":     "tsc --build --force",
-    "anchor:build":  "anchor build",
-    "anchor:test":   "anchor test",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "eslint '**/*.{ts,tsx}' --ignore-path .gitignore",
+    "typecheck": "tsc --build --force",
+    "anchor:build": "anchor build",
+    "anchor:test": "anchor test",
     "anchor:deploy": "anchor deploy --provider.cluster devnet",
-    "dev":           "npm run dev --workspace=app"
+    "dev": "npm run dev --workspace=app"
   },
   "devDependencies": {
-    "@types/node":             "^20.0.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser":        "^7.0.0",
-    "eslint":                  "^8.57.0",
-    "typescript":              "^5.4.0"
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9",
+    "typescript": "^5.4.0"
   },
   "engines": {
     "node": ">=18.0.0",
-    "npm":  ">=9.0.0"
+    "npm": ">=9.0.0"
   }
 }

@@ -1,0 +1,14 @@
+{
+  "name": "ika-grpc",
+  "version": "0.1.0",
+  "description": "Local stub for the Ika Network gRPC client (pre-alpha replacement)",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

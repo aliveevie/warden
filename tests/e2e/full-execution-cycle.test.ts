@@ -31,8 +31,8 @@ import { proveCompliance } from "@warden/fhe";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const POLICY_PROGRAM_ID    = new PublicKey("WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj");
-const FHE_STATE_PROGRAM_ID = new PublicKey("WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj");
+const POLICY_PROGRAM_ID    = new PublicKey("WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMi");
+const FHE_STATE_PROGRAM_ID = new PublicKey("WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj");
 const IKA_PROGRAM_ID       = new PublicKey("87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY");
 
 function anchorDiscriminator(name: string): Uint8Array {

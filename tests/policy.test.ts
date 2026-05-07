@@ -20,7 +20,7 @@ import {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const POLICY_PROGRAM_ID = new PublicKey(
-  "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj",
+  "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMi",
 );
 
 function derivePolicyPda(agentId: Uint8Array): [PublicKey, number] {

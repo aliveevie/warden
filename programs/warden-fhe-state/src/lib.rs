@@ -7,7 +7,7 @@ pub mod state;
 
 use instructions::*;
 
-declare_id!("WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj");
+declare_id!("WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj");
 
 /// Encrypt program deployed on Solana devnet.
 pub mod encrypt_program {

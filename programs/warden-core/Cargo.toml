@@ -1,0 +1,24 @@
+[workspace]
+# Self-contained — keeps anchor-1.x deps from clashing with the anchor-0.30
+# programs in the parent workspace.
+resolver = "2"
+
+[package]
+name    = "warden-core"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+anchor-lang        = "1"
+encrypt-anchor     = { path = "../../external-sdks/encrypt/chains/solana/program-sdk/anchor" }
+encrypt-types      = { path = "../../external-sdks/encrypt/crates/encrypt-types" }
+encrypt-dsl        = { package = "encrypt-solana-dsl", path = "../../external-sdks/encrypt/chains/solana/program-sdk/dsl" }
+ika-dwallet-anchor = { path = "../../external-sdks/ika/chains/solana/program-sdk/anchor" }
+
+[dev-dependencies]
+litesvm     = "0.7"
+solana-sdk  = "2"
+sha2        = "0.10"

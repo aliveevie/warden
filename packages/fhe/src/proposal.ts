@@ -17,7 +17,7 @@ import { ComplianceGraphInputHandles, ComplianceProof } from "./types";
 // ─── Program-derived address helpers ─────────────────────────────────────────
 
 export const WARDEN_FHE_STATE_PROGRAM_ID = new PublicKey(
-  "WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj",
+  "WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj",
 );
 export const ENCRYPT_PROGRAM_ID = new PublicKey(
   "4ebfzWdKnrnGseuQpezXdG8yCdHqwQ1SSBHD3bWArND8",

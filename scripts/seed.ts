@@ -39,10 +39,10 @@ const KEYPAIR_PATH = process.env.PRINCIPAL_KEYPAIR_PATH
   ?? path.join(__dirname, "../keys/principal.json");
 
 const POLICY_PROGRAM_ID    = new PublicKey(
-  process.env.WARDEN_POLICY_PROGRAM_ID ?? "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj",
+  process.env.WARDEN_POLICY_PROGRAM_ID ?? "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMi",
 );
 const FHE_STATE_PROGRAM_ID = new PublicKey(
-  process.env.WARDEN_FHE_STATE_PROGRAM_ID ?? "WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj",
+  process.env.WARDEN_FHE_STATE_PROGRAM_ID ?? "WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj",
 );
 const IKA_PROGRAM_ID = new PublicKey("87W54kGYFQ1rgWqMeu4XTPHWXWmXSQCcjm8vCTfiq1oY");
 

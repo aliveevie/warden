@@ -1,0 +1,18 @@
+[package]
+name    = "warden-integration-tests"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+anchor-lang  = { workspace = true }
+litesvm      = "0.3"
+solana-sdk   = "2.0"
+sha2         = "0.10"
+warden-policy        = { path = "../../programs/warden-policy" }
+warden-fhe-state     = { path = "../../programs/warden-fhe-state" }
+warden-settlement   = { path = "../../programs/warden-settlement" }
+
+[dev-dependencies]

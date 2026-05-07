@@ -1,0 +1,16 @@
+{
+  "extends": "../../../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "allowImportingTsExtensions": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "noUncheckedIndexedAccess": false,
+    "noImplicitOverride": false,
+    "types": ["bun", "node"]
+  },
+  "include": ["src"]
+}

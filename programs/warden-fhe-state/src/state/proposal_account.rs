@@ -1,7 +1,10 @@
 use anchor_lang::prelude::*;
 
-pub const MAX_ENCRYPTED_INTENT_LEN: usize = 4_096;
-pub const MAX_FHE_PROOF_LEN: usize = 8_192;
+// Sized to keep total ProposalAccount space below Solana's 10 KB inner-CPI
+// realloc cap. Larger ciphertexts/proofs should be split across multiple
+// chunks or stored in a side account.
+pub const MAX_ENCRYPTED_INTENT_LEN: usize = 1_024;
+pub const MAX_FHE_PROOF_LEN: usize = 2_048;
 
 /// 6 × 32-byte ciphertext handles for the compliance DAG inputs.
 pub const COMPLIANCE_INPUTS_LEN: usize = 6 * 32; // 192

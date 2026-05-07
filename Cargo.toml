@@ -1,14 +1,40 @@
 [workspace]
+exclude = [
+    # Self-contained anchor-1.x sub-workspace using real sponsor SDKs.
+    "programs/warden-core",
+    # Vendored sponsor SDKs (their own workspaces).
+    "external-sdks/encrypt",
+    "external-sdks/ika",
+]
 members = [
     "programs/warden-policy",
     "programs/warden-fhe-state",
     "programs/warden-settlement",
+    "stubs/encrypt-anchor",
+    "stubs/encrypt-types",
+    "stubs/encrypt-dsl",
+    "stubs/encrypt-solana-test",
+    "stubs/ika-dwallet-anchor",
+    "stubs/ika-solana-sdk-types",
+    "tests/integration",
 ]
 resolver = "2"
+
+# Sponsor crates aren't on crates.io yet — point cargo at our local stubs so
+# the program code compile-checks against the real type signatures while the
+# sponsor SDKs remain pre-alpha.
+[patch.crates-io]
+encrypt-anchor       = { path = "stubs/encrypt-anchor" }
+encrypt-types        = { path = "stubs/encrypt-types" }
+encrypt-dsl          = { path = "stubs/encrypt-dsl" }
+encrypt-solana-test  = { path = "stubs/encrypt-solana-test" }
+ika-dwallet-anchor   = { path = "stubs/ika-dwallet-anchor" }
+ika-solana-sdk-types = { path = "stubs/ika-solana-sdk-types" }
 
 # Shared deps used by programs that don't need a specific anchor version.
 # Programs integrating Encrypt (0.32) or Ika (1.x) declare anchor-lang locally.
 [workspace.dependencies]
+anchor-lang      = { version = "0.30.1", features = ["init-if-needed"] }
 anchor-spl       = { version = "0.30.1", features = ["token", "token_2022"] }
 solana-program   = "1.18"
 

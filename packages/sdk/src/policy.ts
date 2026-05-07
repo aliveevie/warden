@@ -12,7 +12,7 @@ import {
 import { AgentConfig, GuardrailSet, PolicyAccountData } from "./types";
 
 export const WARDEN_POLICY_PROGRAM_ID = new PublicKey(
-  "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj",
+  "WRDNpo1icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMi",
 );
 
 // ─── PDA derivation ───────────────────────────────────────────────────────────

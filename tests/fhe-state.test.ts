@@ -25,7 +25,7 @@ import {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const FHE_STATE_PROGRAM_ID = new PublicKey(
-  "WRDNfhe2icyMPVQeT2BpnmFYQBkzH1jEA3E6W3HmPuMj",
+  "WRDNfheState111T2BpnmFYQBkzH1jEA3E6W3HmPuMj",
 );
 const ENCRYPT_PROGRAM_ID = new PublicKey(
   "4ebfzWdKnrnGseuQpezXdG8yCdHqwQ1SSBHD3bWArND8",

@@ -68,6 +68,10 @@ pub struct FinaliseProposal<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    /// Ika program — required by warden-policy::authorize_proposal.
+    /// CHECK: Address-checked by warden-policy on the inner CPI.
+    pub ika_program: UncheckedAccount<'info>,
+
     pub encrypt_program: Program<'info, Encrypt>,
     pub system_program:  Program<'info, System>,
 }
@@ -97,18 +101,20 @@ pub fn handler(ctx: Context<FinaliseProposal>) -> Result<()> {
         proposal.status = ProposalStatus::VerifiedCompliant;
 
         // ─── CPI to warden-policy: authorize_proposal ─────────────────────
-        // This triggers the Ika approve_message CPI inside warden-policy,
-        // authorising the dWallet co-signature for this result_commitment.
+        // The inner program triggers the Ika approve_message CPI, authorising
+        // the dWallet co-signature for this result_commitment. AccountMetas
+        // here MUST match warden-policy::AuthorizeProposal's struct field order.
         let authorize_ix = anchor_lang::solana_program::instruction::Instruction {
             program_id: ctx.accounts.warden_policy_program.key(),
             accounts: vec![
-                AccountMeta::new(ctx.accounts.policy.key(), false),
-                AccountMeta::new(ctx.accounts.agent_account.key(), false),
-                AccountMeta::new(ctx.accounts.message_approval.key(), false),
-                AccountMeta::new_readonly(ctx.accounts.dwallet.key(), false),
+                AccountMeta::new(ctx.accounts.policy.key(),                  false),
+                AccountMeta::new(ctx.accounts.agent_account.key(),           false),
+                AccountMeta::new(ctx.accounts.message_approval.key(),        false),
+                AccountMeta::new_readonly(ctx.accounts.dwallet.key(),        false),
                 AccountMeta::new_readonly(ctx.accounts.dwallet_authority.key(), false),
-                AccountMeta::new(ctx.accounts.payer.key(), true),
-                // IkaDwallet and System programs forwarded by warden-policy
+                AccountMeta::new(ctx.accounts.payer.key(),                   true),
+                AccountMeta::new_readonly(ctx.accounts.ika_program.key(),    false),
+                AccountMeta::new_readonly(ctx.accounts.system_program.key(), false),
             ],
             data: warden_policy_authorize_data(
                 proposal.key().to_bytes(),
@@ -125,8 +131,9 @@ pub fn handler(ctx: Context<FinaliseProposal>) -> Result<()> {
                 ctx.accounts.dwallet.to_account_info(),
                 ctx.accounts.dwallet_authority.to_account_info(),
                 ctx.accounts.payer.to_account_info(),
-                ctx.accounts.warden_policy_program.to_account_info(),
+                ctx.accounts.ika_program.to_account_info(),
                 ctx.accounts.system_program.to_account_info(),
+                ctx.accounts.warden_policy_program.to_account_info(),
             ],
         )?;
 
