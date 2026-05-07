@@ -221,23 +221,29 @@ async function main() {
   const encVault = new PublicKey((configInfo.data as Buffer).subarray(100, 132));
   const vaultPk = encVault.equals(SystemProgram.programId) ? payer.publicKey : encVault;
 
-  // Create an Encrypt deposit (one-time per payer per program).
-  log("Setup", "Creating Encrypt deposit account...");
-  await send([new TransactionInstruction({
-    programId: ENCRYPT_PROGRAM,
-    data: Buffer.from([14, depositBump, ...new Array(16).fill(0)]),
-    keys: [
-      { pubkey: depositPda,            isSigner: false, isWritable: true  },
-      { pubkey: configPda,             isSigner: false, isWritable: false },
-      { pubkey: payer.publicKey,       isSigner: true,  isWritable: false },
-      { pubkey: payer.publicKey,       isSigner: true,  isWritable: true  },
-      { pubkey: payer.publicKey,       isSigner: true,  isWritable: true  },
-      { pubkey: vaultPk,               isSigner: vaultPk.equals(payer.publicKey), isWritable: true },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-    ],
-  })]);
-  ok("Deposit created");
+  // Create an Encrypt deposit (one-time per payer per program). Idempotent —
+  // skip if the PDA is already initialised.
+  const existingDeposit = await connection.getAccountInfo(depositPda);
+  if (existingDeposit) {
+    log("Setup", `Encrypt deposit already exists (${depositPda.toBase58()})`);
+  } else {
+    log("Setup", "Creating Encrypt deposit account...");
+    await send([new TransactionInstruction({
+      programId: ENCRYPT_PROGRAM,
+      data: Buffer.from([14, depositBump, ...new Array(16).fill(0)]),
+      keys: [
+        { pubkey: depositPda,            isSigner: false, isWritable: true  },
+        { pubkey: configPda,             isSigner: false, isWritable: false },
+        { pubkey: payer.publicKey,       isSigner: true,  isWritable: false },
+        { pubkey: payer.publicKey,       isSigner: true,  isWritable: true  },
+        { pubkey: payer.publicKey,       isSigner: true,  isWritable: true  },
+        { pubkey: vaultPk,               isSigner: vaultPk.equals(payer.publicKey), isWritable: true },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+      ],
+    })]);
+    ok("Deposit created");
+  }
 
   // ── 1. create_agent ────────────────────────────────────────────────────
   log("1/7", "Creating Warden agent...");
