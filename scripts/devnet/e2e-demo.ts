@@ -41,6 +41,8 @@ import {
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
 import * as crypto from "node:crypto";
+import * as fs from "node:fs";
+import * as os from "node:os";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import * as path from "node:path";
