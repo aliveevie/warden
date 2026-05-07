@@ -309,10 +309,22 @@ async function main() {
   const inputCts = ciphertextIdentifiers.map((id) => new PublicKey(id));
   inputs.forEach((i, idx) => val(i.name, `${i.value} → ${inputCts[idx].toBase58()}`));
 
-  // Output ciphertext for the EBool result. Encrypt creates this via its
-  // execute_graph CPI path — we just generate the keypair the program will
-  // use as the new account.
-  const outputCt = Keypair.generate();
+  // Pre-create the EBool output ciphertext via gRPC. The encrypt-anchor CPI
+  // helper drops signer privileges on remaining accounts, so encrypt can't
+  // create a fresh output account during execute_graph (system create_account
+  // requires the new account to be a signer). By pre-creating an EBool
+  // placeholder the encrypt program treats output_ct as an existing account
+  // and just updates its digest with the homomorphic result.
+  log("3/7", "Pre-creating EBool output ciphertext...");
+  const { ciphertextIdentifiers: outputIds } = await encrypt.createInput({
+    chain: 0,
+    inputs: [{ ciphertextBytes: mockCiphertext(0n, FHE_BOOL), fheType: FHE_BOOL }],
+    proof: Buffer.alloc(0),
+    authorized: WARDEN_PROGRAM.toBytes(),
+    networkEncryptionPublicKey: networkKey,
+  });
+  const outputCtPubkey = new PublicKey(outputIds[0]);
+  ok(`Output CT (EBool): ${outputCtPubkey.toBase58()}`);
 
   // Build a fresh proposal id.
   const proposalId    = crypto.randomBytes(32);
