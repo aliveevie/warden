@@ -18,6 +18,7 @@
     "dev": "npm run dev --workspace=app",
     "devnet:keygen": "tsx scripts/devnet/keygen.ts",
     "devnet:deploy": "tsx scripts/devnet/deploy.ts",
+    "devnet:upgrade": "tsx scripts/devnet/upgrade.ts",
     "devnet:e2e": "tsx scripts/devnet/e2e-demo.ts"
   },
   "devDependencies": {
